@@ -1,0 +1,36 @@
+version: 3
+
+tasks:
+  create_build_dir:
+    cmds:
+      - mkdir -p build
+    generates:
+      - build/
+  
+  create_terraform_dir:
+    dir: ./build
+    cmds:
+      - mkdir -p terraform
+    generates:
+      - terraform/
+
+  build: 
+    desc: "creates manifested jsons from jsonnet"
+    cmds:
+      - task: build_jsonnet
+      - task: build_terraform
+
+  build_jsonnet:
+    desc: "creates manifested jsons from jsonnet"
+    deps:
+      - create_build_dir
+    cmds:
+      - jsonnet -m build/ main.jsonnet
+  
+  build_terraform:
+    desc: "builds the terraform jsons"
+    deps:
+      - build_jsonnet
+      - create_terraform_dir
+    cmds:
+      - jsonnet -m build/terraform/ build/tf
